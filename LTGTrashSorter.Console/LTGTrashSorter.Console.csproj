@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\LTGTrashSorter.AI\LTGTrashSorter.AI.csproj" />
+      <ProjectReference Include="..\LTGTrashSorter.TG\LTGTrashSorter.TG.csproj" />
     </ItemGroup>
 
 </Project>
