@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTGTrashSorter.Console", "LTGTrashSorter.Console\LTGTrashSorter.Console.csproj", "{FFB245AD-76E3-4F92-A9A7-6AA9394641D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTGTrashSorter.AI", "LTGTrashSorter.AI\LTGTrashSorter.AI.csproj", "{DA7E9A54-D448-42B9-A20C-86B5DC5CFB70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTGTrashSorter.TG", "LTGTrashSorter.TG\LTGTrashSorter.TG.csproj", "{98F717DA-0C30-4D88-A458-548ABC99816B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FFB245AD-76E3-4F92-A9A7-6AA9394641D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFB245AD-76E3-4F92-A9A7-6AA9394641D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFB245AD-76E3-4F92-A9A7-6AA9394641D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFB245AD-76E3-4F92-A9A7-6AA9394641D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA7E9A54-D448-42B9-A20C-86B5DC5CFB70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA7E9A54-D448-42B9-A20C-86B5DC5CFB70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA7E9A54-D448-42B9-A20C-86B5DC5CFB70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA7E9A54-D448-42B9-A20C-86B5DC5CFB70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98F717DA-0C30-4D88-A458-548ABC99816B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98F717DA-0C30-4D88-A458-548ABC99816B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98F717DA-0C30-4D88-A458-548ABC99816B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98F717DA-0C30-4D88-A458-548ABC99816B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

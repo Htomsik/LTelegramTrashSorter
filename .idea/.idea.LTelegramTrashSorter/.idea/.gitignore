@@ -1,0 +1,30 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/modules.xml
+/contentModel.xml
+/.idea.LTelegramTrashSorter.iml
+/projectSettingsUpdater.xml
+# Ignored default folder with query files
+/queries/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+*obj/
+*bin/
+*/obj/
+*/bin/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+**/wwwroot/lib
+**/wwwroot/lib-*
+**/wwwroot/css
+/.idea/
+*.idea/
+logs/
+*.db*
+*.DotSettings*
