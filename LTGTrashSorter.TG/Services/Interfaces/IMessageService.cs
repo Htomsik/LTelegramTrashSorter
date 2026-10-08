@@ -5,10 +5,14 @@ namespace LTGTrashSorter.TG.Services.Interfaces
     public interface IMessageService
     {
         /// <summary>
-        ///     Send text message to user
+        ///     Send text message 
         /// </summary>
-        Task SendMessageAsync(User targetUser, string message);
-
+        Task SendMessageAsync(long targetId, string message);
+        
+        /// <summary>
+        ///     Forward message from user/chat/group
+        /// </summary>
+        Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId);
         
         /// <summary>
         ///     Background message worker

@@ -2,6 +2,7 @@
 using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Services.Interfaces;
 using TL;
+using WTelegram;
 
 namespace LTGTrashSorter.TG.Services
 {
@@ -16,16 +17,38 @@ namespace LTGTrashSorter.TG.Services
             _createMessageToUserAction = createMessageToUserAction;
         }
         
-        public async Task SendMessageAsync(User?  targetUser, string message)
+        public async Task SendMessageAsync(long targetId, string message)
         {
+            var targetPeer = _context.GetInputPeer(targetId);
+            
             if (_context.TelegramClient is null 
-                || targetUser is null  
-                || targetUser.ID == 0)
+                || targetPeer is null  
+                || targetPeer.ID == 0)
                 return;
             
-            await _context.TelegramClient.SendMessageAsync(targetUser, message);
+            await _context.TelegramClient.SendMessageAsync(targetPeer, message);
         }
-        
+
+        public async Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId)
+        {
+            if (_context.TelegramClient is null) return false;
+            
+            var fromPeer = _context.GetInputPeer(fromId);
+            var toPeer = _context.GetInputPeer(toId);
+
+            if (fromPeer is null || toPeer is null) 
+                return false;
+
+            await _context.TelegramClient.Messages_ForwardMessages(
+                from_peer: fromPeer,
+                id: new[] { messageId },
+                random_id: new[] { Helpers.RandomLong() },
+                to_peer: toPeer
+            );
+
+            return true;
+        }
+
         public async Task ProcessUpdatesAsync(UpdatesBase updates)
         {
             if (updates.UpdateList == null)
@@ -62,7 +85,11 @@ namespace LTGTrashSorter.TG.Services
                 return;
             
             // Find user in our list
-            var user = _context.Users.FirstOrDefault(u => u.Id == targetUserId);
+            var ret = _context.Users.TryGetValue(targetUserId, out var user);
+            if (!ret || user == null)
+            {
+                return;
+            }
             
             string messageText = msg.message;
             if (string.IsNullOrWhiteSpace(messageText))
@@ -73,7 +100,9 @@ namespace LTGTrashSorter.TG.Services
                 messageText = messageText.Replace("/v", "", StringComparison.OrdinalIgnoreCase).Trim();
                 string jsonAnswer = _createMessageToUserAction.Invoke(messageText);
                 string formattedJson = Regex.Unescape(jsonAnswer);
-                await SendMessageAsync(user.OriginalUser, formattedJson);
+                
+                Console.WriteLine("formattedJson: " + formattedJson);
+                await SendMessageAsync(user.Id, formattedJson);
             }
         }
     }

@@ -2,5 +2,9 @@
 
 public interface ITelegramTools
 {
-    Task<string> GetProcessChannelsList();
+    Task<string> GetChannelsList();
+
+    Task<string> GetLastChannelsMessages();
+    
+    Task<string> ForwardMessage(long fromChannelId, int messageId);
 }

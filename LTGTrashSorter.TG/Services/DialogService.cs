@@ -42,15 +42,16 @@ namespace LTGTrashSorter.TG.Services
                     case PeerUser peerUser:
                         var user = dialogs.users[peerUser.user_id];
                         var telegramUser = new TelegramUser(user);
-                        _context.Users.Add(telegramUser);
+                        _context.Users.Add(telegramUser.Id, telegramUser);
                         break;
                     
                     case PeerChannel peerChannel:
                         var channelBase = dialogs.chats[peerChannel.channel_id];
-                        if (channelBase is Channel channel)
+                        if (channelBase is Channel channel
+                            && channel.IsChannel)
                         {
                             var telegramChannel = new TelegramChannel(channel);
-                            _context.Channels.Add(telegramChannel);
+                            _context.Channels.Add(telegramChannel.Id, telegramChannel);
                         }
                         break;
                 }

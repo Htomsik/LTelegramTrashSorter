@@ -13,4 +13,8 @@
       <ProjectReference Include="..\LTGTrashSorter.TG\LTGTrashSorter.TG.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="14.0.1-beta2" />
+    </ItemGroup>
+
 </Project>

@@ -36,13 +36,12 @@ public class DeepSeekService : IAiService
             new(ChatRole.User, userMessage)
         };
         
-        
         var options = new ChatOptions
         {
-            Temperature = 0.5f, 
+            Temperature = 0.1f, 
             ResponseFormat = ChatResponseFormat.Json,
-            Tools = _tools?.ToList()
-            
+            Tools = _tools?.ToList(),
+            ToolMode = ChatToolMode.Auto
         };
         
         var response = await _chatClient.GetResponseAsync(messages, options);

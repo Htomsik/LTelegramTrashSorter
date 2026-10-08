@@ -24,12 +24,29 @@ namespace LTGTrashSorter.TG.Core
         /// <summary>
         ///     Contact list
         /// </summary>
-        public List<TelegramUser> Users { get; set; } = new();
+        public Dictionary<long, TelegramUser> Users { get; set; } = new();
         
         /// <summary>
         ///    Subscribed channels
         /// </summary>
-        public List<TelegramChannel> Channels { get; set; } = new();
+        public Dictionary<long, TelegramChannel> Channels { get; set; } = new();
+        
+        public InputPeer? GetInputPeer(long id)
+        {
+            var ret = Users.TryGetValue(id, out var user);
+            if (ret && user is  not null)
+            {
+                return user.OriginalUser.ToInputPeer();
+            }
+            
+            ret = Channels.TryGetValue(id, out var channel);
+            if (ret && channel is  not null)
+            {
+                return channel.OriginalChannel.ToInputPeer();
+            }
+            
+            return null;
+        }
         
         public BotContext(AuthorizationData authorizationData)
         {

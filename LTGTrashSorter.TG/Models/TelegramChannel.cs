@@ -14,9 +14,8 @@ public record TelegramChannel
     [JsonIgnore]
     public Channel OriginalChannel { get; init; }
     
-    public bool IsGroup { get; init; } 
-    
-    public bool IsChannel { get; init; } 
+    [JsonIgnore]
+    public List<TelegramMessage> LastMessages {get; set; }
     
     public TelegramChannel(Channel channel)
     {
@@ -24,7 +23,5 @@ public record TelegramChannel
         OriginalChannel =  channel;
         DisplayName = channel.Title ?? string.Empty;
         SubscribersCount = channel.participants_count;
-        IsChannel = channel.IsChannel;
-        IsGroup = channel.IsGroup;
     }
 }

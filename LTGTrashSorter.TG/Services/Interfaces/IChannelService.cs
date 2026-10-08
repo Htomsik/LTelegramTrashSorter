@@ -4,5 +4,5 @@ namespace LTGTrashSorter.TG.Services.Interfaces;
 
 public interface IChannelService
 {
-    public Task<IEnumerable<TelegramMessage>> LoadLastMessagesAsync(long channelId);
+    public Task<bool> LoadLastMessagesAsync(long channelId);
 }

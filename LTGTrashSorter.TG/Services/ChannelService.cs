@@ -13,20 +13,23 @@ public class ChannelService : IChannelService
         _context = context;
     }
 
-    public async Task<IEnumerable<TelegramMessage>> LoadLastMessagesAsync(long channelId)
+    public async Task<bool> LoadLastMessagesAsync(long channelId)
     {
-        if(_context.TelegramClient == null)
-            return new List<TelegramMessage>();
-        
-        var telegramChannel = _context.Channels.FirstOrDefault(c => c.Id == channelId);
-        if (telegramChannel == null)
-            return new List<TelegramMessage>();
+        if (_context.TelegramClient == null)
+            return false;
+
+        var ret = _context.Channels.TryGetValue(channelId, out var telegramChannel);
+        if (!ret || telegramChannel == null)
+            return false;
         
         var history = await _context.TelegramClient.Messages_GetHistory(
             peer: telegramChannel.OriginalChannel,
             limit: 10
         );
-          
+        
+        if(history == null || history.Count == 0)
+            return false;
+        
         var telegramMessages = new  List<TelegramMessage>();
         foreach (var msgBase in history.Messages)
         {
@@ -35,6 +38,9 @@ public class ChannelService : IChannelService
                 telegramMessages.Add(new TelegramMessage(msg));
             }
         }
-        return telegramMessages;
+
+        telegramChannel.LastMessages =  telegramMessages;
+        
+        return true;
     }
 }
