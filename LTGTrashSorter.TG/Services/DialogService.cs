@@ -23,16 +23,21 @@ namespace LTGTrashSorter.TG.Services
             
             var dialogs = await _context.TelegramClient.Messages_GetAllDialogs();
             
-            var oldSelectedUsers = _context.ProcessUsers.ToList();
-            var oldSelectedChannels = _context.ProcessChannels.ToList();
-            
             _context.Users.Clear();
+            _context.Channels.Clear();
             
             // Add all dialogs 
-            foreach (var dialog in dialogs.dialogs)
+            foreach (var dialogBase in dialogs.dialogs)
             {
+                // Scip Archive
+                if (dialogBase is Dialog dialog)
+                {
+                    if (dialog.folder_id == 1)
+                        continue;
+                }
+                
                 //TODO Add mapper only if needed
-                switch (dialog.Peer)
+                switch (dialogBase.Peer)
                 {
                     case PeerUser peerUser:
                         var user = dialogs.users[peerUser.user_id];
@@ -51,22 +56,6 @@ namespace LTGTrashSorter.TG.Services
                 }
             }
             
-            // Restore Selection
-            foreach (var selectId in oldSelectedUsers)
-            {
-                if (_context.Users.Any(x => x.Id == selectId))
-                {
-                    _context.ProcessUsers.Add(selectId);
-                }
-            }
-            
-            foreach (var selectId in oldSelectedChannels)
-            {
-                if (_context.Channels.Any(x => x.Id == selectId))
-                {
-                    _context.ProcessUsers.Add(selectId);
-                }
-            }
             
             return true;
         }
