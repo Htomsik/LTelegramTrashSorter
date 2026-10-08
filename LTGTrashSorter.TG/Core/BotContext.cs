@@ -27,9 +27,19 @@ namespace LTGTrashSorter.TG.Core
         public List<TelegramUser> Users { get; set; } = new();
         
         /// <summary>
-        ///     Contact list to answer
+        ///    Subscribed channels
         /// </summary>
-        public List<long> AnswerUsers { get; set; } = new();
+        public List<TelegramChannel> Channels { get; set; } = new();
+        
+        /// <summary>
+        ///     Collectable users
+        /// </summary>
+        public List<long> ProcessUsers { get; set; } = new();
+        
+        /// <summary>
+        ///     Collectable channels
+        /// </summary>
+        public List<long> ProcessChannels{ get; set; } = new();
         
         public BotContext(AuthorizationData authorizationData)
         {

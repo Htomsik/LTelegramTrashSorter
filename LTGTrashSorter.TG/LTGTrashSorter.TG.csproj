@@ -7,7 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="14.0.1-beta2" />
       <PackageReference Include="WTelegramClient" Version="4.4.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LTGTrashSorter.Core\LTGTrashSorter.Core.csproj" />
     </ItemGroup>
 
 </Project>

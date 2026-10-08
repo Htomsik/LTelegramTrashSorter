@@ -1,4 +1,5 @@
-﻿using LTGTrashSorter.TG.Core;
+﻿using System.Text.RegularExpressions;
+using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Services.Interfaces;
 using TL;
 
@@ -63,19 +64,16 @@ namespace LTGTrashSorter.TG.Services
             // Find user in our list
             var user = _context.Users.FirstOrDefault(u => u.Id == targetUserId);
             
-            // if (user == null ||
-            //     !_context.AnswerUsers.Exists(x => x == user.Id))
-            //     return;
-            
             string messageText = msg.message;
             if (string.IsNullOrWhiteSpace(messageText))
                 return;
             
             if (messageText.ToLower().StartsWith("/v"))
             {
-                messageText = messageText.Replace("/v", "");
-                var answer = _createMessageToUserAction.Invoke(messageText);
-                await SendMessageAsync(user.OriginalUser, answer);
+                messageText = messageText.Replace("/v", "", StringComparison.OrdinalIgnoreCase).Trim();
+                string jsonAnswer = _createMessageToUserAction.Invoke(messageText);
+                string formattedJson = Regex.Unescape(jsonAnswer);
+                await SendMessageAsync(user.OriginalUser, formattedJson);
             }
         }
     }
