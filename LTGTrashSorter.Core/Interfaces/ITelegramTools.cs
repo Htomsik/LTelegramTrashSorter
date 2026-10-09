@@ -7,4 +7,6 @@ public interface ITelegramTools
     Task<string> GetLastChannelsMessages();
     
     Task<string> ForwardMessage(long fromChannelId, int messageId);
+
+    Task<string> SendTextMessage(string text);
 }

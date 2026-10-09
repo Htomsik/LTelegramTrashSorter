@@ -7,11 +7,6 @@ namespace LTGTrashSorter.TG.Core
     public class BotContext 
     {
         /// <summary>
-        ///     PERMANENT TG Authorization dataset
-        /// </summary>
-        public AuthorizationData AuthorizationData { get; set; }
-        
-        /// <summary>
         ///     Api client for TG operations
         /// </summary>
         public Client? TelegramClient { get; set; }
@@ -46,11 +41,6 @@ namespace LTGTrashSorter.TG.Core
             }
             
             return null;
-        }
-        
-        public BotContext(AuthorizationData authorizationData)
-        {
-            AuthorizationData = authorizationData;
         }
     }
 }

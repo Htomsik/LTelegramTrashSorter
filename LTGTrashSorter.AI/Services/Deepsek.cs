@@ -1,6 +1,8 @@
 ﻿using System.ClientModel;
 using LTGTrashSorter.AI.Tools;
+using LTGTrashSorter.Core.Models;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
 using OpenAI;
 
 namespace LTGTrashSorter.AI.Services;
@@ -9,30 +11,33 @@ public class DeepSeekService : IAiService
 {
     private readonly IEnumerable<AITool>? _tools;
     private readonly IChatClient _chatClient;
+    
+    private readonly Settings _settings;
 
-    public DeepSeekService(string apiKey, string baseUrl = "https://api.deepseek.com",
+    public DeepSeekService(IOptions<Settings> settings,
         IEnumerable<AITool>? tools = null)
     {
+        _settings = settings.Value;
         _tools = tools;
+        
         var openAiOptions = new OpenAIClientOptions
         {
-            Endpoint = new Uri(baseUrl)
+            Endpoint = new Uri(_settings.Ai.BaseURL)
         };
 
-        var openAiClient = new OpenAIClient(new ApiKeyCredential(apiKey), openAiOptions);
-        
-        _chatClient = openAiClient.GetChatClient("deepseek-chat")
+        var openAiClient = new OpenAIClient(new ApiKeyCredential(_settings.Ai.ApiKey), openAiOptions);
+        _chatClient = openAiClient.GetChatClient(_settings.Ai.ModelName)
             .AsIChatClient()
             .AsBuilder()
             .UseFunctionInvocation() // Авто-вызов C# функций
             .Build();
     }
     
-    public async Task<string> ProcessMessageAsync(string systemPrompt, string userMessage)
+    public async Task<string> ProcessMessageAsync( string userMessage)
     {
         var messages = new List<ChatMessage>
         {
-            new(ChatRole.System, systemPrompt),
+            new(ChatRole.System, _settings.Ai.SystemPrompt),
             new(ChatRole.User, userMessage)
         };
         
