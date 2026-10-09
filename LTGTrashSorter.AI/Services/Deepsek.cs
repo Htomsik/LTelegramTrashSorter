@@ -33,7 +33,7 @@ public class DeepSeekService : IAiService
             .Build();
     }
     
-    public async Task<string> ProcessMessageAsync( string userMessage)
+    public async Task<string> ProcessMessageAsync(string userMessage, CancellationToken cancellationToken)
     {
         var messages = new List<ChatMessage>
         {
@@ -49,7 +49,7 @@ public class DeepSeekService : IAiService
             ToolMode = ChatToolMode.Auto
         };
         
-        var response = await _chatClient.GetResponseAsync(messages, options);
+        var response = await _chatClient.GetResponseAsync(messages, options, cancellationToken);
         return response.Text ?? string.Empty;
     }
 }

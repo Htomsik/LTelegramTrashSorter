@@ -2,5 +2,5 @@
 
 public interface IAiService
 {
-    Task<string> ProcessMessageAsync(string userMessage);
+    Task<string> ProcessMessageAsync(string userMessage, CancellationToken cancellationToken = default);
 }

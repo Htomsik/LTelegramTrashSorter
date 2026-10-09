@@ -2,8 +2,17 @@
 
 public class Settings
 {
+    public WorkerSettings Worker { get; set; } = new();
+        
     public TelegramSettings Telegram { get; set; } = new();
+    
     public OpenAiSettings Ai { get; set; } = new();
+    
+}
+
+public class WorkerSettings
+{
+    public int Timeout { get; set; } = 60*1000;
 }
 
 public class TelegramSettings
