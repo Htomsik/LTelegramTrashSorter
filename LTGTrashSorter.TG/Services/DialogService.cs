@@ -23,40 +23,70 @@ namespace LTGTrashSorter.TG.Services
             
             var dialogs = await _context.TelegramClient.Messages_GetAllDialogs();
             
-            _context.Users.Clear();
-            _context.Channels.Clear();
+            await LoadChannels(dialogs);
+            await LoadUsers(dialogs);
             
-            // Add all dialogs 
+            return true;
+        }
+
+
+        // Load only new channels
+        private async Task<bool> LoadChannels(Messages_Dialogs? dialogs)
+        {
+            if (dialogs is null)
+                return false;
+            
+            var activeChannelsIds = new HashSet<long>();
             foreach (var dialogBase in dialogs.dialogs)
             {
-                // Scip Archive
-                if (dialogBase is Dialog dialog)
+                if (dialogBase is Dialog { folder_id: 1 } dialog)
+                    continue;
+
+                if (dialogBase.Peer is not PeerChannel peerChannel 
+                    || !dialogs.chats.TryGetValue(peerChannel.channel_id, out var channelBase)
+                    || channelBase is not Channel channel)
+                    continue;
+                
+                activeChannelsIds.Add(channel.id);
+                if (_context.Channels.ContainsKey(channel.id))
                 {
-                    if (dialog.folder_id == 1)
-                        continue;
+                    continue;
                 }
                 
-                //TODO Add mapper only if needed
-                switch (dialogBase.Peer)
-                {
-                    case PeerUser peerUser:
-                        var user = dialogs.users[peerUser.user_id];
-                        var telegramUser = new TelegramUser(user);
-                        _context.Users.Add(telegramUser.Id, telegramUser);
-                        break;
-                    
-                    case PeerChannel peerChannel:
-                        var channelBase = dialogs.chats[peerChannel.channel_id];
-                        if (channelBase is Channel channel
-                            && channel.IsChannel)
-                        {
-                            var telegramChannel = new TelegramChannel(channel);
-                            _context.Channels.Add(telegramChannel.Id, telegramChannel);
-                        }
-                        break;
-                }
+                // Add only new
+                var telegramChannel = new TelegramChannel(channel);
+                _context.Channels.Add(telegramChannel.Id, telegramChannel);
+            }
+
+            // Remove unsubscribed/deleted channels
+            var nonExistsChannels = _context.Channels.Keys.Where(x => !activeChannelsIds.Contains(x));
+            foreach (var id in nonExistsChannels)
+            {
+                _context.Channels.Remove(id);
             }
             
+            return true;
+        }
+        
+
+        // Load All users
+        private async Task<bool> LoadUsers(Messages_Dialogs? dialogs)
+        {
+            if (dialogs is null)
+                return false;
+            
+            _context.Users.Clear();
+            foreach (var dialogBase in dialogs.dialogs)
+            {
+                if (dialogBase is Dialog { folder_id: 1 } dialog)
+                    continue;
+
+                if (dialogBase.Peer is not PeerUser peerUser || !dialogs.users.TryGetValue(peerUser.user_id, out var user)) 
+                    continue;
+                
+                var telegramUser = new TelegramUser(user);
+                _context.Users[telegramUser.Id] = telegramUser;
+            }
             
             return true;
         }
