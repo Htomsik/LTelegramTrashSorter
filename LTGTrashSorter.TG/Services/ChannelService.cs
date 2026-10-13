@@ -1,6 +1,8 @@
-﻿using LTGTrashSorter.TG.Core;
+﻿using LTGTrashSorter.Core.Models;
+using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Models;
 using LTGTrashSorter.TG.Services.Interfaces;
+using Microsoft.Extensions.Options;
 using TL;
 
 namespace LTGTrashSorter.TG.Services;
@@ -8,9 +10,11 @@ namespace LTGTrashSorter.TG.Services;
 public class ChannelService : IChannelService
 {
     private readonly BotContext _context;
-    public ChannelService(BotContext context)
+    private readonly Settings _settings;
+    public ChannelService(BotContext context, IOptions<Settings>  settings)
     {
         _context = context;
+        _settings = settings.Value;
     }
 
     public async Task<bool> LoadLastMessagesAsync(long channelId)
@@ -24,7 +28,7 @@ public class ChannelService : IChannelService
         
         var history = await _context.TelegramClient.Messages_GetHistory(
             peer: telegramChannel.OriginalChannel,
-            limit: 10
+            limit: _settings.Telegram.LastMessagesSaveLimit
         );
         
         if(history == null || history.Count == 0)

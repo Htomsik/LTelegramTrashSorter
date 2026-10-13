@@ -24,6 +24,8 @@ public class TelegramSettings
     public string PhoneNumber { get; set; } = string.Empty;
     
     public string Password { get; set; } = string.Empty;
+
+    public int LastMessagesSaveLimit { get; set; } = 5;
 }
 
 public class OpenAiSettings
