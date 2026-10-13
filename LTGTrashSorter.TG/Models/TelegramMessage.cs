@@ -4,7 +4,7 @@ namespace LTGTrashSorter.TG.Models;
 
 public record TelegramMessage
 {
-    public long Id { get; init; }
+    public int Id { get; init; }
     
     public long PeerId { get; init; }
     

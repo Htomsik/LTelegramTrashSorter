@@ -38,7 +38,7 @@ public class ContentAnalyzerService : IContentAnalyzerService
         string prompt = $"Проанализируй последние полученные сообщения из каналов. " +
                         $"Если найдешь действительно важные посты — перешли их с помощью инструмента ForwardMessage. " +
                         $"Если ничего интересного нет — ничего не пересылай." +
-                        $"Сейчас ты работаешь в тестовом режиме, поэтому пересылай хотя бы одну новость.";
+                        $"Сейчас ты работаешь в тестовом режиме, поэтому пересылай хотя бы две новости.";
 
         _logger.LogInformation("Send request to analyze message (Messages: {Count})...", unanalyzedMessagesCount);
         var response = await _aiService.ProcessMessageAsync(prompt, cancellationToken);

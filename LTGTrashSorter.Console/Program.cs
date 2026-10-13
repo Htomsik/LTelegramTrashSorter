@@ -29,7 +29,7 @@ var context = new BotContext();
 
 IMessageService messageService = new MessageService(context);
 IWebSearchTool searchTools = new SearchTools(options);
-var telegramTools = new TelegramTools(context, messageService);
+var telegramTools = new TelegramTools(context, null, messageService);
 var tools = new AITool[]
 {
     AIFunctionFactory.Create(searchTools.SearchWebAsync),
@@ -51,7 +51,7 @@ messageProcessor.CreateMessageToUserAction = msg =>
 
 
 IDialogService dialogService = new DialogService(context);
-IChannelService channelService = new ChannelService(context);
+IChannelService channelService = new ChannelService(context, options);
 var ret = await authService.AuthorizeAsync();
 if (!ret)
     return;

@@ -1,4 +1,6 @@
-﻿namespace LTGTrashSorter.Core.Interfaces;
+﻿using LTGTrashSorter.Core.Models.DTO;
+
+namespace LTGTrashSorter.Core.Interfaces;
 
 public interface ITelegramTools
 {
@@ -6,7 +8,7 @@ public interface ITelegramTools
 
     Task<string> GetLastChannelsMessages();
     
-    Task<string> ForwardMessage(long fromChannelId, int messageId);
+    Task<string> ForwardMessage(List<TelegramImportantMessageDto>  importantMessages);
 
     Task<string> SendTextMessage(string text);
 }
