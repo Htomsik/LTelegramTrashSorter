@@ -29,6 +29,8 @@ builder.Services.AddTransient<IContentAnalyzerService,  ContentAnalyzerService>(
 builder.Services.AddSingleton<BotContext>();
 builder.Services.AddTransient<IChannelService, ChannelService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IDialogService, DialogService>();
+builder.Services.AddTransient<IMessageService, MessageService>();
 
 // Tools
 builder.Services.AddSingleton<ITelegramTools, TelegramTools>();

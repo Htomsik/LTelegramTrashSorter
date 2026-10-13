@@ -2,7 +2,6 @@
 using LTGTrashSorter.Core.Interfaces;
 using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Models.DTO;
-using LTGTrashSorter.TG.Services;
 using LTGTrashSorter.TG.Services.Interfaces;
 using Newtonsoft.Json;
 
@@ -11,12 +10,12 @@ namespace LTGTrashSorter.TG.Tools;
 public class TelegramTools : ITelegramTools
 {
     private readonly BotContext _context;
-    
-    public IMessageService MessageService { get; set; }
+    private readonly IMessageService _messageSender;
 
-    public TelegramTools(BotContext context)
+    public TelegramTools(BotContext context, IMessageService messageSender)
     {
         _context = context;
+        _messageSender = messageSender;
     }
     
     [Description("Получить список всех каналов")]
@@ -83,7 +82,7 @@ public class TelegramTools : ITelegramTools
             return $"Ошибка при пересылке сообщения.";
         }
         
-        bool success = await MessageService.ForwardMessageByIdsAsync(fromChannelId, targetId, messageId);
+        bool success = await _messageSender.ForwardMessageByIdsAsync(fromChannelId, targetId, messageId);
     
         return success 
             ? $"Сообщение успешно переслано." 
@@ -101,7 +100,7 @@ public class TelegramTools : ITelegramTools
             return $"Ошибка при пересылке сообщения.";
         }
         
-        await MessageService.SendMessageAsync(targetId, text);
+        await _messageSender.SendMessageAsync(targetId, text);
     
         return "Сообщение отправлено.";
     }

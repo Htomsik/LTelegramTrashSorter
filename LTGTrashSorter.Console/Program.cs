@@ -26,8 +26,10 @@ configuration.GetSection("Settings").Bind(settings);
 var  options = Options.Create(settings);
 
 var context = new BotContext();
+
+IMessageService messageService = new MessageService(context);
 IWebSearchTool searchTools = new SearchTools(options);
-var telegramTools = new TelegramTools(context);
+var telegramTools = new TelegramTools(context, messageService);
 var tools = new AITool[]
 {
     AIFunctionFactory.Create(searchTools.SearchWebAsync),
@@ -39,14 +41,14 @@ var tools = new AITool[]
 
 IAiService aiSerive = new DeepSeekService(options, tools);
 IAuthService authService = new AuthService(context, options, new ConsoleDataRequestService());
-IMessageService messageService = new MessageService(context, msg =>
+
+IMessageProcessorService messageProcessor = new MessageProcessorService(context, messageService);
+messageProcessor.CreateMessageToUserAction = msg =>
 {
-    
     var result = aiSerive.ProcessMessageAsync(msg).Result;
     return result;
-} );
+};
 
-telegramTools.MessageService = messageService;
 
 IDialogService dialogService = new DialogService(context);
 IChannelService channelService = new ChannelService(context);
@@ -62,6 +64,6 @@ foreach (var channel in context.Channels)
 }
 
 
-context.TelegramClient.OnUpdates += messageService.ProcessUpdatesAsync;
+context.TelegramClient.OnUpdates += messageProcessor.ProcessUpdatesAsync;
 
 Console.ReadLine();

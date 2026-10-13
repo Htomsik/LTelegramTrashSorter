@@ -14,9 +14,5 @@ namespace LTGTrashSorter.TG.Services.Interfaces
         /// </summary>
         Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId);
         
-        /// <summary>
-        ///     Background message worker
-        /// </summary>
-        Task ProcessUpdatesAsync(UpdatesBase updates);
     }
 }
