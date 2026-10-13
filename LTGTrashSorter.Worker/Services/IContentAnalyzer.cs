@@ -5,7 +5,7 @@ namespace LTGTrashSorter.Worker.Services;
 
 public interface IContentAnalyzerService
 {
-    Task AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default);
+    Task<bool> AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default);
 }
 
 public class ContentAnalyzerService : IContentAnalyzerService
@@ -24,7 +24,7 @@ public class ContentAnalyzerService : IContentAnalyzerService
         _logger = logger;
     }
     
-    public async Task AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default)
     {
         var unanalyzedMessagesCount = _botContext.Channels.Values
             .Sum(c => c.LastMessages.Count);
@@ -32,25 +32,27 @@ public class ContentAnalyzerService : IContentAnalyzerService
         if (unanalyzedMessagesCount == 0)
         {
             _logger.LogInformation("No new messages found.");
-            return;
+            return true;
         }
         
         string prompt = $"Проанализируй последние полученные сообщения из каналов. " +
                         $"Если найдешь действительно важные посты — перешли их с помощью инструмента ForwardMessage. " +
-                        $"Если ничего интересного нет — ничего не пересылай.";
+                        $"Если ничего интересного нет — ничего не пересылай." +
+                        $"Сейчас ты работаешь в тестовом режиме, поэтому пересылай хотя бы одну новость.";
 
         _logger.LogInformation("Send request to analyze message (Messages: {Count})...", unanalyzedMessagesCount);
-        
-        await _aiService.ProcessMessageAsync(prompt, cancellationToken);
+        var response = await _aiService.ProcessMessageAsync(prompt, cancellationToken);
+        _logger.LogInformation("Analyzer response: {response}", response);
         
         ClearProcessedMessages();
+        return true;
     }
 
     private void ClearProcessedMessages()
     {
         foreach (var channel in _botContext.Channels.Values)
         {
-            channel.LastMessages.Clear(); // Или помечаем IsProcessed = true
+            channel.LastMessages.Clear();
         }
     }
 }
