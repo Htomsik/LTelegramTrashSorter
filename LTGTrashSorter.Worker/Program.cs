@@ -64,6 +64,9 @@ using (var scope = host.Services.CreateScope())
     {
         logger.LogCritical("Telegram is not authorized.");
     }
+    
+    WTelegram.Helpers.Log = (lvl, str) => logger.Log((LogLevel)lvl, "WTelegram: {Message}", str);
 }
 
 await host.RunAsync();
+
