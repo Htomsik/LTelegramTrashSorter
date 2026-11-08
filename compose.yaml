@@ -1,0 +1,10 @@
+﻿services:
+  ltgtrashsorter:
+    image: ltgtrashsorter.worker
+    build:
+      context: .
+      dockerfile: LTGTrashSorter.Worker/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./LTGTrashSorter.Worker/.env
+

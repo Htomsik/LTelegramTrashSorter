@@ -17,4 +17,8 @@
       <ProjectReference Include="..\LTGTrashSorter.Core\LTGTrashSorter.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Dockerfile" />
+    </ItemGroup>
+
 </Project>

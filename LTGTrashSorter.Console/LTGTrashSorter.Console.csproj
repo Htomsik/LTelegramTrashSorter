@@ -25,6 +25,7 @@
       <None Update=".env">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Remove="Dockerfile" />
     </ItemGroup>
 
 </Project>
