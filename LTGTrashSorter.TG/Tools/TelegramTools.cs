@@ -81,7 +81,14 @@ public class TelegramTools : ITelegramTools
     {
         _logger?.LogInformation($"{nameof(ForwardMessage)} Started. {importantMessages.Count} Messaged");
 
-        long targetId = _context.TargetChannel?.Id ?? 0;
+         long targetId = 0;
+        
+        #if DEBUG
+            targetId = _context.Me?.id ?? 0;
+        #else
+                targetId = _context.TargetChannel?.Id ?? 0;
+        #endif
+        
         if (targetId == 0)
         {
             _logger?.LogError($"{nameof(ForwardMessage)} aborted: {nameof(targetId)} is empty");
@@ -113,9 +120,8 @@ public class TelegramTools : ITelegramTools
                 errors.Add(err);
                 continue;
             }
-
-            var success = true;
-            //var success = await _messageSender.ForwardMessageByIdsAsync(messageDto.PeerId, targetId, messageDto.Id, false);
+            
+            var success = await _messageSender.ForwardMessageByIdsAsync(messageDto.PeerId, targetId, messageDto.Id, false);
             if (!success)
             {
                 var err = $"Техническая ошибка при пересылке сообщения {messageDto.Id} из канала {messageDto.PeerId}.";

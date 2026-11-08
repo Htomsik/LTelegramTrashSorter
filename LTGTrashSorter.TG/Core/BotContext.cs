@@ -51,6 +51,12 @@ namespace LTGTrashSorter.TG.Core
                 return TargetChannel.OriginalChannel.ToInputPeer();
             }
             
+            ret = Me?.ID  == id;
+            if (ret && Me is not null)
+            {
+                return Me.ToInputPeer();
+            }
+            
             return null;
         }
     }
