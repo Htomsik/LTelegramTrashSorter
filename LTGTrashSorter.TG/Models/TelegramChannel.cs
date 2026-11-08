@@ -12,6 +12,9 @@ public record TelegramChannel
     public int SubscribersCount { get; init; }
     
     [JsonIgnore]
+    public int LastProcessedMessageId { get; set; } = 0;
+    
+    [JsonIgnore]
     public Channel OriginalChannel { get; init; }
     
     [JsonIgnore]

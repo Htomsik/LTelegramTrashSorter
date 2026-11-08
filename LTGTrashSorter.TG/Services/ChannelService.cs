@@ -17,7 +17,7 @@ public class ChannelService : IChannelService
         _settings = settings.Value;
     }
 
-    public async Task<bool> LoadLastMessagesAsync(long channelId)
+    public async Task<bool> LoadLastMessagesAsync(long channelId, int minMessageId = 0)
     {
         if (_context.TelegramClient == null)
             return false;
@@ -28,7 +28,8 @@ public class ChannelService : IChannelService
         
         var history = await _context.TelegramClient.Messages_GetHistory(
             peer: telegramChannel.OriginalChannel,
-            limit: _settings.Telegram.LastMessagesSaveLimit
+            limit: _settings.Telegram.LastMessagesProcessLimit,
+            min_id: minMessageId
         );
         
         if(history == null || history.Count == 0)
@@ -43,8 +44,7 @@ public class ChannelService : IChannelService
             }
         }
 
-        telegramChannel.LastMessages =  telegramMessages;
-        
+        telegramChannel.LastMessages =  telegramMessages.OrderBy(m => m.Id).ToList();
         return true;
     }
 }

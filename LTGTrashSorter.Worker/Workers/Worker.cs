@@ -52,7 +52,7 @@ public class Worker : BackgroundService
                 _logger.LogInformation("Scrap last messages at: {time}", DateTimeOffset.Now);
                 foreach (var channel in _botContext.Channels)
                 {
-                    await _channelService.LoadLastMessagesAsync(channel.Value.Id);
+                    await _channelService.LoadLastMessagesAsync(channel.Value.Id, channel.Value.LastProcessedMessageId);
                 }
             
                 _logger.LogInformation("Analyze scrapped messages at: {time}", DateTimeOffset.Now);

@@ -25,7 +25,7 @@ public class TelegramSettings
     
     public string Password { get; set; } = string.Empty;
 
-    public int LastMessagesSaveLimit { get; set; } = 5;
+    public int LastMessagesProcessLimit { get; set; } = 5;
     
     /// <summary>
     ///     Target channel for posting 

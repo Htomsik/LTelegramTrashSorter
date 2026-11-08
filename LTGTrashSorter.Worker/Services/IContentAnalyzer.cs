@@ -52,6 +52,12 @@ public class ContentAnalyzerService : IContentAnalyzerService
     {
         foreach (var channel in _botContext.Channels.Values)
         {
+            // Save last process message for next analyzing
+            if (channel.LastMessages.Count > 0)
+            {
+                channel.LastProcessedMessageId = channel.LastMessages.Max(m => m.Id);
+            }
+            
             channel.LastMessages.Clear();
         }
     }
