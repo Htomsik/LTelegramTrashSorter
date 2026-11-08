@@ -114,7 +114,7 @@ public class TelegramTools : ITelegramTools
                 continue;
             }
 
-            var success = await _messageSender.ForwardMessageByIdsAsync(messageDto.PeerId, targetId, messageDto.Id);
+            var success = await _messageSender.ForwardMessageByIdsAsync(messageDto.PeerId, targetId, messageDto.Id, false);
             if (!success)
             {
                 var err = $"Техническая ошибка при пересылке сообщения {messageDto.Id} из канала {messageDto.PeerId}.";

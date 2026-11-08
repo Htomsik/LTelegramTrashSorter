@@ -12,7 +12,7 @@ namespace LTGTrashSorter.TG.Services.Interfaces
         /// <summary>
         ///     Forward message from user/chat/group
         /// </summary>
-        Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId);
+        Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId, bool clearPeerData = false);
         
     }
 }

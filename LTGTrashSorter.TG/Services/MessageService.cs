@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using LTGTrashSorter.TG.Core;
+﻿using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Services.Interfaces;
 using TL;
 using WTelegram;
@@ -27,7 +26,7 @@ namespace LTGTrashSorter.TG.Services
             await _context.TelegramClient.SendMessageAsync(targetPeer, message);
         }
 
-        public async Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId)
+        public async Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId, bool clearPeerData)
         {
             if (_context.TelegramClient is null) return false;
             
@@ -41,7 +40,8 @@ namespace LTGTrashSorter.TG.Services
                 from_peer: fromPeer,
                 id: new[] { messageId },
                 random_id: new[] { Helpers.RandomLong() },
-                to_peer: toPeer
+                to_peer: toPeer,
+                drop_author: clearPeerData
             );
 
             return true;

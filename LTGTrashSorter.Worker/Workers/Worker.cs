@@ -1,4 +1,3 @@
-using LTGTrashSorter.AI.Services;
 using LTGTrashSorter.Core.Models;
 using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Services.Interfaces;
