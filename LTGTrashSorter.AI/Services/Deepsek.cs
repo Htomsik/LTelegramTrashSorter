@@ -37,7 +37,7 @@ public class DeepSeekService : IAiService
     {
         var messages = new List<ChatMessage>
         {
-            new(ChatRole.System, _settings.Ai.SystemPrompt),
+            new(ChatRole.System, _settings.Ai.GetFormattedSystemPrompt()),
             new(ChatRole.User, userMessage)
         };
         
