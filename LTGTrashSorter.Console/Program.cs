@@ -50,7 +50,7 @@ messageProcessor.CreateMessageToUserAction = msg =>
 };
 
 
-IDialogService dialogService = new DialogService(context);
+IDialogService dialogService = new DialogService(context, options);
 IChannelService channelService = new ChannelService(context, options);
 var ret = await authService.AuthorizeAsync();
 if (!ret)

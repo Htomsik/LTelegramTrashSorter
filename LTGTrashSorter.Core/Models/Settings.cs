@@ -26,6 +26,11 @@ public class TelegramSettings
     public string Password { get; set; } = string.Empty;
 
     public int LastMessagesSaveLimit { get; set; } = 5;
+    
+    /// <summary>
+    ///     Target channel for posting 
+    /// </summary>
+    public long TargetChannelId { get; set; }
 }
 
 public class OpenAiSettings
@@ -34,9 +39,9 @@ public class OpenAiSettings
     
     public string WebToolKey { get; set; } = string.Empty;
 
-    public string BaseURL { get; set; } = "https://api.deepseek.com";
+    public string BaseURL { get; set; } = string.Empty;
 
-    public string ModelName { get; set; } = "deepseek-chat";
+    public string ModelName { get; set; } = string.Empty;
     
     public string SystemPrompt { get; set; } =  $$$"""
                          Ты — AI-анализатор Telegram-каналов и групп. У тебя ОТСУТСТВУЕТ прямой текстовый вывод в консоль. Абсолютно ВСЕ взаимодействия с пользователем и системой выполняются ИСКЛЮЧИТЕЛЬНО через вызов ваших инструментов (Tools).
@@ -53,15 +58,10 @@ public class OpenAiSettings
                             - Обязательно вызывай этот инструмент для КАЖДОГО найденного важного сообщения после анализа через `GetLastChannelsMessages`.
                             - Если подходит несколько сообщений — вызови инструмент `ForwardMessage` несколько раз подряд для каждого `messageId` и `fromChannelId`.
                          
-                         4. `SendTextMessage`:
-                            - ОБЯЗАТЕЛЬНЫЙ инструмент для отправки ЛЮБОГО текстового ответа, пояснения, статус-отчета или ответа на вопрос пользователя в чат (включая приветствия, вопросы о твоих возможностях "/v Какими инструментами ты владеешь" и текстовые пояснения причин выборки).
-                            - Если тебе нужно что-то сказать пользователю словами — ТЫ ОБЯЗАН ВЫЗВАТЬ `SendTextMessage`.
-                         
                          СТРОГИЕ ЗАПРЕТЫ:
                          - Категорически запрещено выводить финальный ответ обычной строкой текста. Вывод строки без вызова функции считается критической ошибкой.
                          - Не выдумывай несуществующие `ChannelId` и `MessageId` — бери их только из ответов инструмента `GetLastChannelsMessages`.
                          - Никогда не упоминай названия C#-классов, сервисов или внутренних функций пользователю.
-                         
                          
                          Формат итогового ответа — СТРОГО JSON:
                          {{

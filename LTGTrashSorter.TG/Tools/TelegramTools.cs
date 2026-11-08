@@ -42,7 +42,7 @@ public class TelegramTools : ITelegramTools
         return json;
     }
     
-    [Description("Получить список последних сообщений во всех каналах для последующего анализа.")]
+    [Description("Получить список последних постов во всех каналах для последующего анализа.")]
     public async Task<string> GetLastChannelsMessages()
     {
         if (_context.TelegramClient == null)
@@ -76,12 +76,12 @@ public class TelegramTools : ITelegramTools
         return json;
     }
     
-    [Description("Переслать конкретные сообщения из канала в чат. Обязательно вызывай этот инструмент для найденных сообщений подходящий под параметры.")]
+    [Description("Переслать конкретные сообщения в канал. Обязательно вызывай этот инструмент для найденных постов подходящих под параметры.")]
     public async Task<string> ForwardMessage(List<TelegramImportantMessageDto> importantMessages)
     {
         _logger?.LogInformation($"{nameof(ForwardMessage)} Started. {importantMessages.Count} Messaged");
-        
-        long targetId = _context.Me?.id ?? 0;
+
+        long targetId = _context.TargetChannel?.Id ?? 0;
         if (targetId == 0)
         {
             _logger?.LogError($"{nameof(ForwardMessage)} aborted: {nameof(targetId)} is empty");

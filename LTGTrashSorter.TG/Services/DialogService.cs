@@ -1,6 +1,8 @@
-﻿using LTGTrashSorter.TG.Core;
+﻿using LTGTrashSorter.Core.Models;
+using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Models;
 using LTGTrashSorter.TG.Services.Interfaces;
+using Microsoft.Extensions.Options;
 using TL;
 
 namespace LTGTrashSorter.TG.Services
@@ -8,10 +10,12 @@ namespace LTGTrashSorter.TG.Services
     public class DialogService : IDialogService
     {
         private readonly BotContext _context;
+        private readonly Settings _settings;
         
-        public DialogService(BotContext context)
+        public DialogService(BotContext context, IOptions<Settings> settings)
         {
             _context = context;
+            _settings = settings.Value;
         }
         
         public async Task<bool> LoadAsync()
@@ -47,6 +51,15 @@ namespace LTGTrashSorter.TG.Services
                     || channelBase is not Channel channel)
                     continue;
                 
+                // Check Target channel
+                if (_settings.Telegram.TargetChannelId != 0 
+                    && channel.id == _settings.Telegram.TargetChannelId)
+                {
+                    var targetTelegramChannel = new TelegramChannel(channel);
+                    _context.TargetChannel =  targetTelegramChannel;
+                    continue;
+                }
+                
                 activeChannelsIds.Add(channel.id);
                 if (_context.Channels.ContainsKey(channel.id))
                 {
@@ -68,7 +81,6 @@ namespace LTGTrashSorter.TG.Services
             return true;
         }
         
-
         // Load All users
         private async Task<bool> LoadUsers(Messages_Dialogs? dialogs)
         {

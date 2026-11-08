@@ -39,7 +39,16 @@ public class Worker : BackgroundService
             try
             {
                 _logger.LogInformation("Scrap last dialogs at: {time}", DateTimeOffset.Now);
-                await _dialogService.LoadAsync();
+                
+                var loaded= await _dialogService.LoadAsync();
+                if (!loaded || _botContext.TargetChannel == null)
+                {
+                    _logger.LogWarning("Can't load dialogs or current channel (ID: {TargetId}) not found. Skip worker turn", 
+                        _settings.Telegram.TargetChannelId);
+                    
+                    await Task.Delay(_settings.Worker.Timeout, stoppingToken);
+                    continue;
+                }
                 
                 _logger.LogInformation("Scrap last messages at: {time}", DateTimeOffset.Now);
                 foreach (var channel in _botContext.Channels)
@@ -49,8 +58,7 @@ public class Worker : BackgroundService
             
                 _logger.LogInformation("Analyze scrapped messages at: {time}", DateTimeOffset.Now);
                 await _analyzerService.AnalyzeAndProcessNewMessagesAsync(stoppingToken);
-            
-                await Task.Delay(_settings.Worker.Timeout, stoppingToken);
+                
             }
             catch (Exception e)
             {
@@ -58,7 +66,6 @@ public class Worker : BackgroundService
                 throw;
             }
             await Task.Delay(_settings.Worker.Timeout, stoppingToken);
-            
         }
     }
 }

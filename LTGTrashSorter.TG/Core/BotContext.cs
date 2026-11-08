@@ -15,6 +15,11 @@ namespace LTGTrashSorter.TG.Core
         ///     CurrentUser
         /// </summary>
         public User? Me { get; set; }
+
+        /// <summary>
+        ///     User admin  channel
+        /// </summary>
+        public TelegramChannel? TargetChannel {get; set;}
         
         /// <summary>
         ///     Contact list
@@ -38,6 +43,12 @@ namespace LTGTrashSorter.TG.Core
             if (ret && channel is  not null)
             {
                 return channel.OriginalChannel.ToInputPeer();
+            }
+            
+            ret = TargetChannel?.Id  == id;
+            if (ret && TargetChannel is not null)
+            {
+                return TargetChannel.OriginalChannel.ToInputPeer();
             }
             
             return null;
