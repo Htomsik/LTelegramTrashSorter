@@ -12,6 +12,7 @@ using LTGTrashSorter.TG.Services.Interfaces;
 using LTGTrashSorter.TG.Tools;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 
@@ -40,7 +41,7 @@ var tools = new AITool[]
 };
 
 IAiService aiSerive = new DeepSeekService(options, tools);
-IAuthService authService = new AuthService(context, options, new ConsoleDataRequestService());
+IAuthService authService = new AuthService(context, options, new ConsoleDataRequestService(), new Logger<AuthService>(null));
 
 IMessageProcessorService messageProcessor = new MessageProcessorService(context, messageService);
 messageProcessor.CreateMessageToUserAction = msg =>

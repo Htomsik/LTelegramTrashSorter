@@ -32,7 +32,6 @@ public class TelegramSettings
     /// </summary>
     public long TargetChannelId { get; set; }
     
-    
     public string SessionPath { get; set; } = "WTelegram.session";
 }
 

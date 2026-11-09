@@ -2,6 +2,7 @@
 using LTGTrashSorter.Core.Models;
 using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WTelegram;
 
@@ -11,13 +12,18 @@ namespace LTGTrashSorter.TG.Services
     {
         private readonly BotContext _context;
         private readonly IDataRequestService _dataRequestService;
+        private readonly ILogger<AuthService> _logger;
         private readonly Settings _settings;
         
-        public AuthService(BotContext context, IOptions<Settings> settings,  IDataRequestService dataRequestService )
+        public AuthService(BotContext context, 
+            IOptions<Settings> settings,  
+            IDataRequestService dataRequestService,
+            ILogger<AuthService> logger)
         {
             _settings = settings.Value;
             _context = context;
             _dataRequestService = dataRequestService;
+            _logger = logger;
         }
         
         public async Task<bool> AuthorizeAsync()
@@ -39,8 +45,9 @@ namespace LTGTrashSorter.TG.Services
                 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
                 return false;
             }
         }
