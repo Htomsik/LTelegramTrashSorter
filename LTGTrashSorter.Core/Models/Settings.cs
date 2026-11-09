@@ -31,6 +31,9 @@ public class TelegramSettings
     ///     Target channel for posting 
     /// </summary>
     public long TargetChannelId { get; set; }
+    
+    
+    public string SessionPath { get; set; } = "WTelegram.session";
 }
 
 public class OpenAiSettings

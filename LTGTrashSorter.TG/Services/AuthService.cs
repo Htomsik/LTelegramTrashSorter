@@ -55,7 +55,8 @@ namespace LTGTrashSorter.TG.Services
                 case "password":  return _settings.Telegram.Password;
                 case "phone_number": return _settings.Telegram.PhoneNumber;
                 case "verification_code": return _dataRequestService.GetData("verification_code");
-                case "proxy": return "http://127.0.0.1:7890";
+                case "proxy": return "http://127.0.0.1:7890"; 
+                case "session_pathname" : return _settings.Telegram.SessionPath;
                 default: return null;  
             }
         }

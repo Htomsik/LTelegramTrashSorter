@@ -5,6 +5,7 @@
       context: .
       dockerfile: LTGTrashSorter.Worker/Dockerfile
     restart: unless-stopped
+    volumes:
+      - ./sessionData:/app/data
     env_file:
-      - ./LTGTrashSorter.Worker/.env
-
+      - ./.env
