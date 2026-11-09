@@ -6,6 +6,6 @@
       dockerfile: LTGTrashSorter.Worker/Dockerfile
     restart: unless-stopped
     volumes:
-      - ./sessionData:/app/data
+      - ./data:/app/data
     env_file:
       - ./.env

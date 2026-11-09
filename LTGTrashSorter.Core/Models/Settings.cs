@@ -31,6 +31,8 @@ public class TelegramSettings
     public string PhoneNumber { get; set; } = string.Empty;
     
     public string Password { get; set; } = string.Empty;
+    
+    public string Proxy {get; set;} = string.Empty;
 
     public int LastMessagesProcessLimit { get; set; } = 5;
     

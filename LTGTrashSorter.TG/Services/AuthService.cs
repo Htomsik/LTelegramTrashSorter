@@ -13,14 +13,14 @@ namespace LTGTrashSorter.TG.Services
         private readonly BotContext _context;
         private readonly IDataRequestService _dataRequestService;
         private readonly ILogger<AuthService> _logger;
-        private readonly Settings _settings;
+        private readonly TelegramSettings _settings;
         
         public AuthService(BotContext context, 
             IOptions<Settings> settings,  
             IDataRequestService dataRequestService,
             ILogger<AuthService> logger)
         {
-            _settings = settings.Value;
+            _settings = settings.Value.Telegram;
             _context = context;
             _dataRequestService = dataRequestService;
             _logger = logger;
@@ -57,13 +57,13 @@ namespace LTGTrashSorter.TG.Services
         {
             switch (what)
             {
-                case "api_id": return _settings.Telegram.ApiId;
-                case "api_hash": return _settings.Telegram.ApiHash;
-                case "password":  return _settings.Telegram.Password;
-                case "phone_number": return _settings.Telegram.PhoneNumber;
+                case "api_id": return _settings.ApiId;
+                case "api_hash": return _settings.ApiHash;
+                case "password":  return _settings.Password;
+                case "phone_number": return _settings.PhoneNumber;
                 case "verification_code": return _dataRequestService.GetData("verification_code");
-                case "proxy": return "http://127.0.0.1:7890"; 
-                case "session_pathname" : return _settings.Telegram.SessionPath;
+                case "proxy": return _settings.Proxy; 
+                case "session_pathname" : return _settings.SessionPath;
                 default: return null;  
             }
         }
