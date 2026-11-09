@@ -8,11 +8,18 @@ public class Settings
     
     public OpenAiSettings Ai { get; set; } = new();
     
+    public DbSettings DB { get; set; }
+    
 }
 
 public class WorkerSettings
 {
     public int Timeout { get; set; } = 60*1000;
+}
+
+public class DbSettings
+{
+    public string DbPath { get; set; } = "database.db";
 }
 
 public class TelegramSettings

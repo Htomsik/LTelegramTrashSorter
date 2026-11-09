@@ -16,6 +16,7 @@
     <ItemGroup>
       <ProjectReference Include="..\LTGTrashSorter.AI\LTGTrashSorter.AI.csproj" />
       <ProjectReference Include="..\LTGTrashSorter.Core\LTGTrashSorter.Core.csproj" />
+      <ProjectReference Include="..\LTGTrashSorter.DB\LTGTrashSorter.DB.csproj" />
       <ProjectReference Include="..\LTGTrashSorter.TG\LTGTrashSorter.TG.csproj" />
     </ItemGroup>
 
