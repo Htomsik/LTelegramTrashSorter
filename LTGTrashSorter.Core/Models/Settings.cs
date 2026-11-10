@@ -41,6 +41,11 @@ public class TelegramSettings
     /// </summary>
     public long TargetChannelId { get; set; }
     
+    /// <summary>
+    ///     Log channel, posting messages from analyzer 
+    /// </summary>
+    public long LogChannelId { get; set; }
+    
     public string SessionPath { get; set; } = "WTelegram.session";
 }
 

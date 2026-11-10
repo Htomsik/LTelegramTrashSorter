@@ -1,8 +1,12 @@
 ﻿using LTGTrashSorter.AI.Services;
 using LTGTrashSorter.Core.Interfaces;
+using LTGTrashSorter.Core.Models;
+using LTGTrashSorter.Core.Models.DTO;
 using LTGTrashSorter.TG.Core;
+using Newtonsoft.Json;
 
 namespace LTGTrashSorter.Worker.Services;
+
 
 public class ContentAnalyzerService : IContentAnalyzerService
 {
@@ -20,7 +24,7 @@ public class ContentAnalyzerService : IContentAnalyzerService
         _logger = logger;
     }
     
-    public async Task<bool> AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default)
+    public async Task<ContentAnalyzerResult> AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default)
     {
         var unanalyzedMessagesCount = _botContext.Channels.Values
             .Sum(c => c.LastMessages.Count);
@@ -28,7 +32,7 @@ public class ContentAnalyzerService : IContentAnalyzerService
         if (unanalyzedMessagesCount == 0)
         {
             _logger.LogInformation("No new messages found.");
-            return true;
+            return new ContentAnalyzerResult("No new messages found.", false);
         }
         
         string prompt = $"Проанализируй последние полученные сообщения из каналов. " +
@@ -37,11 +41,13 @@ public class ContentAnalyzerService : IContentAnalyzerService
                         $"Сейчас ты работаешь в тестовом режиме, поэтому пересылай хотя бы одну новость.";
 
         _logger.LogInformation("Send request to analyze message (Messages: {Count})...", unanalyzedMessagesCount);
-        var response = await _aiService.ProcessMessageAsync(prompt, cancellationToken);
-        _logger.LogInformation("Analyzer response: {response}", response);
+        var responseJson = await _aiService.ProcessMessageAsync(prompt, cancellationToken);
+        _logger.LogInformation("Analyzer response: {response}", responseJson);
+        
+        string messageText = ExtractMessageFromJson(responseJson);
         
         ClearProcessedMessages();
-        return true;
+        return new  ContentAnalyzerResult(messageText, false, _botContext.Channels.Count, unanalyzedMessagesCount);
     }
 
     private void ClearProcessedMessages()
@@ -56,5 +62,26 @@ public class ContentAnalyzerService : IContentAnalyzerService
             
             channel.LastMessages.Clear();
         }
+    }
+    
+    private string ExtractMessageFromJson(string jsonResponse)
+    {
+        if (string.IsNullOrWhiteSpace(jsonResponse))
+            return "Пустой ответ от AI.";
+
+        try
+        {
+            var parsed = JsonConvert.DeserializeObject<AnalyzerResponseDTO>(jsonResponse);
+            if (parsed != null && !string.IsNullOrEmpty(parsed.Message))
+            {
+                return parsed.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Can't parse response: {jsonResponse}", jsonResponse);
+        }
+        
+        return jsonResponse;
     }
 }

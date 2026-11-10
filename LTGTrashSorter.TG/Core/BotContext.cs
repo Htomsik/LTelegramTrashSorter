@@ -22,6 +22,11 @@ namespace LTGTrashSorter.TG.Core
         public TelegramChannel? TargetChannel {get; set;}
         
         /// <summary>
+        ///     User admin log channel
+        /// </summary>
+        public TelegramChannel? LogChannel {get; set;}
+        
+        /// <summary>
         ///     Contact list
         /// </summary>
         public Dictionary<long, TelegramUser> Users { get; set; } = new();
@@ -33,6 +38,7 @@ namespace LTGTrashSorter.TG.Core
         
         public InputPeer? GetInputPeer(long id)
         {
+            // TODO Add one inputPeer set and take all of peers from one place
             var ret = Users.TryGetValue(id, out var user);
             if (ret && user is  not null)
             {
@@ -49,6 +55,12 @@ namespace LTGTrashSorter.TG.Core
             if (ret && TargetChannel is not null)
             {
                 return TargetChannel.OriginalChannel.ToInputPeer();
+            }
+            
+            ret = LogChannel?.Id  == id;
+            if (ret && LogChannel is not null)
+            {
+                return LogChannel.OriginalChannel.ToInputPeer();
             }
             
             ret = Me?.ID  == id;

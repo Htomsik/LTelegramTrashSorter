@@ -34,6 +34,7 @@ Settings__Telegram__ApiHash=
 Settings__Telegram__PhoneNumber=
 Settings__Telegram__Password=
 Settings__Telegram__TargetChannelId=
+Settings__Telegram__LogChannelId=
 Settings__Telegram__SessionPath=/app/data/WTelegram.session
 Settings__DB__DBPath=/app/data/database.db
 Settings__Ai__ApiKey=

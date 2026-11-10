@@ -4,5 +4,5 @@ namespace LTGTrashSorter.Core.Interfaces;
 
 public interface IContentAnalyzerService
 {
-    Task<bool> AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default);
+    Task<ContentAnalyzerResult> AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,3 +1,4 @@
+using LTGTrashSorter.Core.Interfaces;
 using LTGTrashSorter.Core.Models;
 using LTGTrashSorter.TG.Core;
 using LTGTrashSorter.TG.Services.Interfaces;
@@ -13,6 +14,7 @@ public class Worker : BackgroundService
     private readonly IContentAnalyzerService _analyzerService;
     private readonly IDialogService _dialogService;
     private readonly ITelegramStateService _tgStateService;
+    private readonly IMessageService _messageService;
 
     private readonly BotContext _botContext;
     private readonly Settings _settings;
@@ -23,6 +25,7 @@ public class Worker : BackgroundService
         IContentAnalyzerService analyzerService,
         IDialogService dialogService,
         ITelegramStateService tgStateService,
+        IMessageService messageService,
         BotContext  botContext)
     {
         _logger = logger;
@@ -30,6 +33,7 @@ public class Worker : BackgroundService
         _analyzerService = analyzerService;
         _dialogService = dialogService;
         _tgStateService = tgStateService;
+        _messageService = messageService;
         _botContext = botContext;
         _settings = settings.Value;
     }
@@ -67,7 +71,15 @@ public class Worker : BackgroundService
                 }
                 
                 _logger.LogInformation("Analyze scrapped messages at: {time}", DateTimeOffset.Now);
-                await _analyzerService.AnalyzeAndProcessNewMessagesAsync(stoppingToken);
+                var analyzerResult = await _analyzerService.AnalyzeAndProcessNewMessagesAsync(stoppingToken);
+                if (_settings.Telegram.LogChannelId != 0 && !string.IsNullOrEmpty(analyzerResult.Message))
+                {
+                    var logText = $"📊 Report ({DateTime.UtcNow:dd.MM.yyyy HH:mm UTC})\n" +
+                                  $"📁 Channels processed: {analyzerResult.ChannelsCount}\n" +
+                                  $"💬 Messages analyzed: {analyzerResult.MessagesCount}\n" +
+                                  $"📝 Analyzer message: {analyzerResult.Message}";
+                    await _messageService.SendMessageAsync(_settings.Telegram.LogChannelId, logText);
+                }
                 
                 _logger.LogInformation("Save last dialogs to db at: {time}", DateTimeOffset.Now);
                 await _tgStateService.SaveStateFromContextAsync();

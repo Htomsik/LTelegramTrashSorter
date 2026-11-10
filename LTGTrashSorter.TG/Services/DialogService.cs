@@ -50,8 +50,17 @@ namespace LTGTrashSorter.TG.Services
                     || !dialogs.chats.TryGetValue(peerChannel.channel_id, out var channelBase)
                     || channelBase is not Channel channel)
                     continue;
+
+                // Skip log channel
+                if (_settings.Telegram.LogChannelId != 0 
+                    && channel.id == _settings.Telegram.LogChannelId)
+                {
+                    var targetTelegramChannel = new TelegramChannel(channel);
+                    _context.LogChannel =  targetTelegramChannel;
+                    continue;
+                }
                 
-                // Check Target channel
+                // Skip Target channel
                 if (_settings.Telegram.TargetChannelId != 0 
                     && channel.id == _settings.Telegram.TargetChannelId)
                 {
