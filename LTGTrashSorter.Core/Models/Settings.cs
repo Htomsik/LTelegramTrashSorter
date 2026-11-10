@@ -7,9 +7,9 @@ public class Settings
     public TelegramSettings Telegram { get; set; } = new();
     
     public OpenAiSettings Ai { get; set; } = new();
-    
-    public DbSettings DB { get; set; }
-    
+
+    public DbSettings DB { get; set; } = new();
+
 }
 
 public class WorkerSettings

@@ -36,13 +36,17 @@ ScaffoldingReadMe.txt
 # NuGet Symbol Packages
 *.snupkg
 
-# dotenv environment variables file
+# env and db files
 .env
+*.db
+*.session
 
 # Others
 ~$*
 *~
 CodeCoverage/
+collect.py
+
 
 # MSBuild Binary and Structured Log
 *.binlog
