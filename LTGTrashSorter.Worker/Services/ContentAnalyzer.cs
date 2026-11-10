@@ -34,11 +34,10 @@ public class ContentAnalyzerService : IContentAnalyzerService
             _logger.LogInformation("No new messages found.");
             return new ContentAnalyzerResult("No new messages found.", false);
         }
-        
+
         string prompt = $"Проанализируй последние полученные сообщения из каналов. " +
                         $"Если найдешь действительно важные посты — перешли их с помощью инструмента пересылки. " +
-                        $"Если ничего интересного нет — ничего не пересылай." +
-                        $"Сейчас ты работаешь в тестовом режиме, поэтому пересылай хотя бы одну новость.";
+                        $"Если ничего интересного нет — ничего не пересылай.";
 
         _logger.LogInformation("Send request to analyze message (Messages: {Count})...", unanalyzedMessagesCount);
         var responseJson = await _aiService.ProcessMessageAsync(prompt, cancellationToken);
