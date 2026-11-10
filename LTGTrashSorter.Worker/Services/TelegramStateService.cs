@@ -1,16 +1,10 @@
-﻿using LTGTrashSorter.DB.Models;
+﻿using LTGTrashSorter.Core.Interfaces;
+using LTGTrashSorter.DB.Models;
 using LTGTrashSorter.DB.Repository;
 using LTGTrashSorter.TG.Core;
 using Microsoft.Extensions.Logging;
 
 namespace LTGTrashSorter.Worker.Services;
-
-public interface ITelegramStateService
-{
-    Task<bool> LoadStateIntoContextAsync();
-    
-    Task<bool> SaveStateFromContextAsync();
-}
 
 public class TelegramDbStateService : ITelegramStateService
 {

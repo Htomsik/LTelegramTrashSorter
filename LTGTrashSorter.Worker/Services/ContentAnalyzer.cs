@@ -1,12 +1,8 @@
 ﻿using LTGTrashSorter.AI.Services;
+using LTGTrashSorter.Core.Interfaces;
 using LTGTrashSorter.TG.Core;
 
 namespace LTGTrashSorter.Worker.Services;
-
-public interface IContentAnalyzerService
-{
-    Task<bool> AnalyzeAndProcessNewMessagesAsync(CancellationToken cancellationToken = default);
-}
 
 public class ContentAnalyzerService : IContentAnalyzerService
 {
