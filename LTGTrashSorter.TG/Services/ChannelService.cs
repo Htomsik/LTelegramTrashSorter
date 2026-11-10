@@ -21,11 +21,21 @@ public class ChannelService : IChannelService
     {
         if (_context.TelegramClient == null)
             return false;
-
-        var ret = _context.Channels.TryGetValue(channelId, out var telegramChannel);
-        if (!ret || telegramChannel == null)
-            return false;
         
+        TelegramChannel? telegramChannel = null;
+        if (_context.TargetChannel != null && _context.TargetChannel.Id == channelId)
+        {
+            telegramChannel = _context.TargetChannel;
+        }
+        else
+        {
+            _context.Channels.TryGetValue(channelId, out telegramChannel);
+        }
+        
+        if (telegramChannel == null)
+        {
+            return false; 
+        }
         var history = await _context.TelegramClient.Messages_GetHistory(
             peer: telegramChannel.OriginalChannel,
             limit: _settings.Telegram.LastMessagesProcessLimit,

@@ -48,19 +48,39 @@ public class TelegramTools : ITelegramTools
         if (_context.TelegramClient == null)
             return "Telegram клиент не авторизован.";
 
-        List<TelegramMessagesDto> channelMessagesDto = new ();
-
-        foreach (var channel in _context.Channels.Values)
+        var allChannels = _context.Channels.Values.ToList();
+        if (_context.TargetChannel != null)
         {
-            if(channel.LastMessages.Count == 0 )
+            allChannels.Add(_context.TargetChannel);
+        }
+
+        List<TelegramMessagesDto> channelMessagesDto = new();
+
+        foreach (var channel in allChannels)
+        {
+            if (channel?.LastMessages == null || channel.LastMessages.Count == 0)
                 continue;
-            
+        
             var messageDto = new TelegramMessagesDto(
                 channel.Id, 
-                channel.DisplayName, 
-                channel.LastMessages.Select(x => new TelegramMessageDto(x.Id, x.Message)).ToList());
-            
+                channel.DisplayName,
+                channel.IsTargetChannel, 
+                channel.LastMessages.Select(x => new TelegramMessageDto(x.Id, x.Message)).ToList()
+            );
+        
             channelMessagesDto.Add(messageDto);
+        }
+        
+        if (_context.TargetChannel != null && _context.TargetChannel.LastMessages.Count > 0)
+        {
+            var targetMessageDto = new TelegramMessagesDto(
+                _context.TargetChannel.Id,
+                _context.TargetChannel.DisplayName,
+                true, 
+                _context.TargetChannel.LastMessages.Select(x => new TelegramMessageDto(x.Id, x.Message)).ToList()
+            );
+
+            channelMessagesDto.Add(targetMessageDto);
         }
         
         string json;
@@ -106,6 +126,14 @@ public class TelegramTools : ITelegramTools
 
         foreach (var messageDto in importantMessages)
         {
+            if (_context.TargetChannel != null && messageDto.PeerId == _context.TargetChannel.Id)
+            {
+                var err = $"Ошибка: Попытка переслать сообщение из целевого канала ({messageDto.PeerId}). Пересылка запрещена.";
+                _logger?.LogWarning(err);
+                errors.Add(err);
+                continue;
+            }
+            
             if (!_context.Channels.TryGetValue(messageDto.PeerId, out var channel))
             {
                 var err = $"Ошибка: Канал с ID {messageDto.PeerId} не найден в списке каналов.";

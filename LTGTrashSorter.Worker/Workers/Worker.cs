@@ -40,7 +40,7 @@ public class Worker : BackgroundService
         {
             try
             {
-                _logger.LogInformation("Start new loop at: {time}", DateTimeOffset.Now);
+                _logger.LogWarning("Start new loop at: {time}", DateTimeOffset.Now);
                 
                 _logger.LogInformation("Scrap last dialogs at: {time}", DateTimeOffset.Now);
                 var loaded= await _dialogService.LoadAsync();
@@ -58,18 +58,21 @@ public class Worker : BackgroundService
                 await _tgStateService.LoadStateIntoContextAsync();
                 
                 _logger.LogInformation("Scrap last messages at: {time}", DateTimeOffset.Now);
+                // Target channel messages
+                await _channelService.LoadLastMessagesAsync(_botContext.TargetChannel.Id);
+                // All channels
                 foreach (var channel in _botContext.Channels)
                 {
                     await _channelService.LoadLastMessagesAsync(channel.Value.Id, channel.Value.LastProcessedMessageId);
                 }
-            
+                
                 _logger.LogInformation("Analyze scrapped messages at: {time}", DateTimeOffset.Now);
                 await _analyzerService.AnalyzeAndProcessNewMessagesAsync(stoppingToken);
                 
                 _logger.LogInformation("Save last dialogs to db at: {time}", DateTimeOffset.Now);
                 await _tgStateService.SaveStateFromContextAsync();
                 
-                _logger.LogInformation("End loop at: {time}", DateTimeOffset.Now);
+                _logger.LogWarning("End loop at: {time}", DateTimeOffset.Now);
             }
             catch (Exception e)
             {

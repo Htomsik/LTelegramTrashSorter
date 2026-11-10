@@ -55,7 +55,7 @@ namespace LTGTrashSorter.TG.Services
                 if (_settings.Telegram.TargetChannelId != 0 
                     && channel.id == _settings.Telegram.TargetChannelId)
                 {
-                    var targetTelegramChannel = new TelegramChannel(channel);
+                    var targetTelegramChannel = new TelegramChannel(channel, true);
                     _context.TargetChannel =  targetTelegramChannel;
                     continue;
                 }

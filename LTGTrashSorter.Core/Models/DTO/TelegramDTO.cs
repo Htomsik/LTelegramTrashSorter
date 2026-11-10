@@ -6,6 +6,7 @@ namespace LTGTrashSorter.Core.Models.DTO;
 public record TelegramMessagesDto(
     [Description("ID источника")] long PeerId, 
     [Description("Наименование источника")] string PeerName, 
+    [Description("Флаг целевого канала (true — это канал, который надо использовать для дедупликации; false — канал-источник новостей)")] bool IsTargetChannel, 
     [Description("Сообщения из источника")] List<TelegramMessageDto> Messages
 );
 
