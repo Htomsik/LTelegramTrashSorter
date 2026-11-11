@@ -1,4 +1,6 @@
-﻿namespace LTGTrashSorter.Core.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LTGTrashSorter.Core.Models;
 
 public class Settings
 {
@@ -9,12 +11,16 @@ public class Settings
     public OpenAiSettings Ai { get; set; } = new();
 
     public DbSettings DB { get; set; } = new();
-
+    
 }
-
 public class WorkerSettings
 {
-    public int Timeout { get; set; } = 60*1000;
+    public int[] ExecutionHours { get; set; }
+    
+    public string TimeZoneId { get; set; } = "Europe/Moscow";
+    
+    [JsonIgnore]
+    public int DefaultTimeout { get; set; } = 14400000;
 }
 
 public class DbSettings

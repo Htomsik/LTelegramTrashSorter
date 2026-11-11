@@ -27,6 +27,7 @@ builder.Services.AddTransient<ITelegramStateService,  TelegramDbStateService>();
 
 // Other
 builder.Services.AddTransient<IDataRequestService, ConsoleDataRequestService>();
+builder.Services.AddSingleton<IScheduleService, ScheduleService>();
 
 // AI
 builder.Services.AddSingleton<IAiService, DeepSeekService>();

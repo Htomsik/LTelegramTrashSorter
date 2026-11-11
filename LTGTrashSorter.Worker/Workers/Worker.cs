@@ -15,10 +15,11 @@ public class Worker : BackgroundService
     private readonly IDialogService _dialogService;
     private readonly ITelegramStateService _tgStateService;
     private readonly IMessageService _messageService;
+    private readonly IScheduleService _scheduleService;
 
     private readonly BotContext _botContext;
     private readonly Settings _settings;
-
+    
     public Worker(ILogger<Worker> logger, 
         IOptions<Settings> settings,
         IChannelService channelService,
@@ -26,6 +27,7 @@ public class Worker : BackgroundService
         IDialogService dialogService,
         ITelegramStateService tgStateService,
         IMessageService messageService,
+        IScheduleService scheduleService,
         BotContext  botContext)
     {
         _logger = logger;
@@ -34,6 +36,7 @@ public class Worker : BackgroundService
         _dialogService = dialogService;
         _tgStateService = tgStateService;
         _messageService = messageService;
+        _scheduleService = scheduleService;
         _botContext = botContext;
         _settings = settings.Value;
     }
@@ -44,17 +47,22 @@ public class Worker : BackgroundService
         {
             try
             {
-                _logger.LogWarning("Start new loop at: {time}", DateTimeOffset.Now);
+                var schedule = _scheduleService.GetNextExecutionInfo();
+                _logger.LogInformation("Next loop scheduled in {timeSpan} (at {nextTime:HH:mm:ss})", 
+                    schedule.Delay, schedule.TargetTime);
+
+                await Task.Delay(schedule.Delay, stoppingToken);
+                if (stoppingToken.IsCancellationRequested) 
+                    break;
                 
+                _logger.LogWarning("Start new loop at: {time}", DateTimeOffset.Now);
                 _logger.LogInformation("Scrap last dialogs at: {time}", DateTimeOffset.Now);
                 var loaded= await _dialogService.LoadAsync();
-                
                 if (!loaded || _botContext.TargetChannel == null)
                 {
                     _logger.LogWarning("Can't load dialogs or current channel (ID: {TargetId}) not found. Skip worker turn", 
                         _settings.Telegram.TargetChannelId);
                     
-                    await Task.Delay(_settings.Worker.Timeout, stoppingToken);
                     continue;
                 }
                 
@@ -72,11 +80,15 @@ public class Worker : BackgroundService
                 
                 _logger.LogInformation("Analyze scrapped messages at: {time}", DateTimeOffset.Now);
                 var analyzerResult = await _analyzerService.AnalyzeAndProcessNewMessagesAsync(stoppingToken);
+                
+                // TODO move to logging service
                 if (_settings.Telegram.LogChannelId != 0 && !string.IsNullOrEmpty(analyzerResult.Message))
                 {
+                    var nextSchedule = _scheduleService.GetNextExecutionInfo();
                     var logText = $"📊 Report ({DateTime.UtcNow:dd.MM.yyyy HH:mm UTC})\n" +
                                   $"📁 Channels processed: {analyzerResult.ChannelsCount}\n" +
                                   $"💬 Messages analyzed: {analyzerResult.MessagesCount}\n" +
+                                  $"⏰ Next run: {nextSchedule.TargetTime:dd.MM.yyyy HH:mm}\n" +
                                   $"📝 Analyzer message: {analyzerResult.Message}";
                     await _messageService.SendMessageAsync(_settings.Telegram.LogChannelId, logText);
                 }
@@ -91,7 +103,7 @@ public class Worker : BackgroundService
                 _logger.LogError(e, "Worker Error");
                 throw;
             }
-            await Task.Delay(_settings.Worker.Timeout, stoppingToken);
         }
     }
+    
 }
