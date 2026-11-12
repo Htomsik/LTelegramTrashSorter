@@ -8,22 +8,11 @@ public class ScheduleService : IScheduleService
 {
     private readonly ILogger<ScheduleService> _logger;
     private readonly Settings _settings;
-    private readonly TimeZoneInfo _timeZone;
 
     public ScheduleService(IOptions<Settings> settings, ILogger<ScheduleService> logger)
     {
         _logger = logger;
         _settings = settings.Value;
-
-        try
-        {
-            _timeZone = TimeZoneInfo.FindSystemTimeZoneById(_settings.Worker.TimeZoneId);
-        }
-        catch
-        {
-            _logger.LogWarning("TimeZoneId '{TimeZoneId}' not found, falling back to Utc.", _settings.Worker.TimeZoneId);
-            _timeZone = TimeZoneInfo.Utc;
-        }
     }
 
     public ScheduleInfo GetNextExecutionInfo()
@@ -35,12 +24,12 @@ public class ScheduleService : IScheduleService
                 _settings.Worker.DefaultTimeout);
         
             var fallbackDelay = TimeSpan.FromMilliseconds(_settings.Worker.DefaultTimeout);
-            var fallbackTime = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, _timeZone).Add(fallbackDelay);
+            var fallbackTime = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, _settings.Worker.TimeZone).Add(fallbackDelay);
             return new ScheduleInfo(fallbackDelay, fallbackTime);
         }
 
         var sortedHours = hours.OrderBy(h => h).ToArray();
-        var now = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, _timeZone);
+        var now = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, _settings.Worker.TimeZone);
 
         int? targetHour = sortedHours.Cast<int?>().FirstOrDefault(h => h > now.Hour);
         bool isNextDay = false;

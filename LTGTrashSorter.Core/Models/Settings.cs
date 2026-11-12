@@ -21,6 +21,11 @@ public class WorkerSettings
     
     [JsonIgnore]
     public int DefaultTimeout { get; set; } = 14400000;
+    
+    private TimeZoneInfo? _timeZone;
+
+    [JsonIgnore]
+    public TimeZoneInfo TimeZone => _timeZone ??= TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
 }
 
 public class DbSettings
