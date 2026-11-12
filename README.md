@@ -29,15 +29,28 @@ Telegram userbot that automatically filters posts by parameters from subscribed 
 
 ## .env example
 ```
+# App for userbot creditails
 Settings__Telegram__ApiId=
 Settings__Telegram__ApiHash=
+
+# Account creditails
 Settings__Telegram__PhoneNumber=
 Settings__Telegram__Password=
+
+# Channels configuration
 Settings__Telegram__TargetChannelId=
 Settings__Telegram__LogChannelId=
+
+# Storage and Session paths
 Settings__Telegram__SessionPath=/app/data/WTelegram.session
 Settings__DB__DBPath=/app/data/database.db
+
+# Keys
 Settings__Ai__ApiKey=
+
+# Pre post forward / branding
+Settings__Telegram__TargetChannelLinkText= 
+Settings__Telegram__TargetChannelLinkUrl=
 ```
 
 ## Project example

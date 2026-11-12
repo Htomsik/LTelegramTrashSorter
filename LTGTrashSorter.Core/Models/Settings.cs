@@ -52,6 +52,10 @@ public class TelegramSettings
     /// </summary>
     public long TargetChannelId { get; set; }
     
+    public string TargetChannelLinkText { get; set; }
+    
+    public string TargetChannelLinkUrl { get; set; }
+    
     /// <summary>
     ///     Log channel, posting messages from analyzer 
     /// </summary>

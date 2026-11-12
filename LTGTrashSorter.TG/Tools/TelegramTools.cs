@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
 using LTGTrashSorter.Core.Interfaces;
-using LTGTrashSorter.Core.Models;
 using LTGTrashSorter.Core.Models.DTO;
 using LTGTrashSorter.TG.Core;
-using LTGTrashSorter.TG.Models;
 using LTGTrashSorter.TG.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -15,12 +13,14 @@ public class TelegramTools : ITelegramTools
     private readonly BotContext _context;
     private readonly ILogger<TelegramTools>? _logger;
     private readonly IMessageService _messageSender;
+    private readonly IPublishService _publishService;
 
-    public TelegramTools(BotContext context,  ILogger<TelegramTools>? logger , IMessageService messageSender)
+    public TelegramTools(BotContext context,  ILogger<TelegramTools>? logger , IMessageService messageSender, IPublishService publishService)
     {
         _context = context;
         _logger = logger;
         _messageSender = messageSender;
+        _publishService = publishService;
     }
     
     [Description("Получить список всех каналов")]
@@ -96,44 +96,31 @@ public class TelegramTools : ITelegramTools
         return json;
     }
     
-    [Description("Переслать конкретные сообщения в канал. Обязательно вызывай этот инструмент для найденных постов подходящих под параметры.")]
-    public async Task<string> ForwardMessage(List<TelegramImportantMessageDto> importantMessages)
+    [Description("Сохранить ID важных сообщений для последующей пакетной публикации. Обязательно вызывай этот инструмент для найденных постов, подходящих под параметры.")]
+    public async Task<string> SaveImportantMessages(List<TelegramImportantMessageDto> importantMessages)
     {
-        _logger?.LogInformation($"{nameof(ForwardMessage)} Started. {importantMessages.Count} Messaged");
+        _logger?.LogInformation($"{nameof(SaveImportantMessages)} Started. {importantMessages.Count} messages requested.");
 
-         long targetId = 0;
-        
-        #if DEBUG
-            targetId = _context.Me?.id ?? 0;
-        #else
-                targetId = _context.TargetChannel?.Id ?? 0;
-        #endif
-        
-        if (targetId == 0)
-        {
-            _logger?.LogError($"{nameof(ForwardMessage)} aborted: {nameof(targetId)} is empty");
-            return "Ошибка: непредвиденная серверная ошибка, функционал недоступен";
-        }
-        
         if (importantMessages.Count == 0)
         {
-            _logger?.LogWarning($"{nameof(ForwardMessage)} aborted: {nameof(importantMessages)} is empty");
-            return "Список сообщений для пересылки пуст.";
+            _logger?.LogWarning($"{nameof(SaveImportantMessages)} aborted: {nameof(importantMessages)} is empty");
+            return "Список сообщений для сохранения пуст.";
         }
         
         var errors = new List<string>();
-        int successCount = 0;
+        int savedCount = 0;
 
         foreach (var messageDto in importantMessages)
         {
             if (_context.TargetChannel != null && messageDto.PeerId == _context.TargetChannel.Id)
             {
-                var err = $"Ошибка: Попытка переслать сообщение из целевого канала ({messageDto.PeerId}). Пересылка запрещена.";
+                var err = $"Ошибка: Попытка сохранить сообщение из целевого канала ({messageDto.PeerId}). Операция запрещена.";
                 _logger?.LogWarning(err);
                 errors.Add(err);
                 continue;
             }
             
+            // Проверка: существует ли такой канал в контексте
             if (!_context.Channels.TryGetValue(messageDto.PeerId, out var channel))
             {
                 var err = $"Ошибка: Канал с ID {messageDto.PeerId} не найден в списке каналов.";
@@ -141,26 +128,27 @@ public class TelegramTools : ITelegramTools
                 continue;
             }
 
+            // Проверка: есть ли такое сообщение в загруженной истории канала
             var messageExists = channel.LastMessages.Any(m => m.Id == messageDto.Id);
             if (!messageExists)
             {
-                var err = $"Ошибка: Сообщение с ID {messageDto.Id} отсутствует в канале {channel.Id}).";
+                var err = $"Ошибка: Сообщение с ID {messageDto.Id} отсутствует в канале {channel.Id}.";
                 errors.Add(err);
                 continue;
             }
             
-            var success = await _messageSender.ForwardMessageByIdsAsync(messageDto.PeerId, targetId, messageDto.Id, false);
-            if (!success)
-            {
-                var err = $"Техническая ошибка при пересылке сообщения {messageDto.Id} из канала {messageDto.PeerId}.";
-                errors.Add(err);
-                continue;
-            }
-            successCount++;
+            _publishService.AddMessage(messageDto);
+            savedCount++;
         }
 
-        _logger?.LogInformation($"{nameof(ForwardMessage)} finished. Processed {successCount}/{importantMessages.Count}");
-        return $"Переслано {successCount} из {importantMessages.Count}";
+        _logger?.LogInformation($"{nameof(SaveImportantMessages)} finished. Saved {savedCount}/{importantMessages.Count}");
+        
+        if (errors.Count > 0)
+        {
+            return $"; Сохранено: {savedCount} из {importantMessages.Count}. Ошибки: {string.Join("; ", errors)}";
+        }
+
+        return $"Успешно сохранено для публикации: {savedCount} из {importantMessages.Count}";
     }
 
     [Description("Отправить текстовый ответ или пояснение пользователю в чат.")]

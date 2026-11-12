@@ -25,8 +25,45 @@ namespace LTGTrashSorter.TG.Services
             
             await _context.TelegramClient.SendMessageAsync(targetPeer, message);
         }
+        
+        public async Task SendMessageWithLinkAsync(long targetId, string message, string linkText, string url)
+        {
+            var targetPeer = _context.GetInputPeer(targetId);
+    
+            if (_context.TelegramClient is null 
+                || targetPeer is null  
+                || targetPeer.ID == 0)
+                return;
 
-        public async Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId, bool clearPeerData)
+            MessageEntity[]? entities = null;
+
+            if (!string.IsNullOrEmpty(linkText) && !string.IsNullOrEmpty(url))
+            {
+                int index = message.IndexOf(linkText, StringComparison.Ordinal);
+                if (index != -1)
+                {
+                    entities = new MessageEntity[]
+                    {
+                        new MessageEntityTextUrl()
+                        {
+                            offset = index,
+                            length = linkText.Length,
+                            url = url
+                        }
+                    };
+                }
+            }
+
+            await _context.TelegramClient.Messages_SendMessage(
+                peer: targetPeer,
+                message: message,
+                random_id: WTelegram.Helpers.RandomLong(),
+                entities: entities,
+                no_webpage: true // Отключаем предпросмотр
+            );
+        }
+
+        public async Task<bool> ForwardMessageByIdsAsync(long fromId, long toId, int messageId, bool clearPeerData = false, bool isSilent = false)
         {
             if (_context.TelegramClient is null) return false;
             
@@ -41,7 +78,9 @@ namespace LTGTrashSorter.TG.Services
                 id: new[] { messageId },
                 random_id: new[] { Helpers.RandomLong() },
                 to_peer: toPeer,
-                drop_author: clearPeerData
+                drop_author: clearPeerData,
+                silent: isSilent
+                
             );
 
             return true;

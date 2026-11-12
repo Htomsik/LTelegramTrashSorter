@@ -39,6 +39,7 @@ builder.Services.AddTransient<IChannelService, ChannelService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IMessageService, MessageService>();
+builder.Services.AddSingleton<IPublishService, PublishService>();
 
 // Tools
 builder.Services.AddSingleton<ITelegramTools, TelegramTools>();
@@ -52,7 +53,7 @@ builder.Services.AddSingleton<IEnumerable<AITool>>(sp =>
     {
         AIFunctionFactory.Create(tools.GetChannelsList),
         AIFunctionFactory.Create(tools.GetLastChannelsMessages),
-        AIFunctionFactory.Create(tools.ForwardMessage),
+        AIFunctionFactory.Create(tools.SaveImportantMessages),
     };
 });
 

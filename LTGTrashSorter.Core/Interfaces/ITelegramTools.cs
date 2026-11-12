@@ -8,7 +8,7 @@ public interface ITelegramTools
 
     Task<string> GetLastChannelsMessages();
     
-    Task<string> ForwardMessage(List<TelegramImportantMessageDto>  importantMessages);
+    Task<string> SaveImportantMessages(List<TelegramImportantMessageDto>  importantMessages);
 
     Task<string> SendTextMessage(string text);
 }
